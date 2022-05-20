@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	nebula "github.com/vesoft-inc/nebula-go/v2"
+	nebula "github.com/akhilravuri2/nebula-go/v2"
 )
 
 const (

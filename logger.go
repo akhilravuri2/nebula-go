@@ -10,6 +10,11 @@ import (
 	"log"
 )
 
+var (
+	_ Logger = (*DefaultLogger)(nil)
+	_ Logger = (*NoLogger)(nil)
+)
+
 type Logger interface {
 	Info(msg string)
 	Warn(msg string)
@@ -32,5 +37,22 @@ func (l DefaultLogger) Error(msg string) {
 }
 
 func (l DefaultLogger) Fatal(msg string) {
+	log.Fatalf("[FATAL] %s\n", msg)
+}
+
+// NoLogger type. Will omit all messages except Fatal.
+type NoLogger struct{}
+
+// Info method.
+func (l NoLogger) Info(msg string) {}
+
+// Warn method.
+func (l NoLogger) Warn(msg string) {}
+
+// Error method.
+func (l NoLogger) Error(msg string) {}
+
+// Fatal method.
+func (l NoLogger) Fatal(msg string) {
 	log.Fatalf("[FATAL] %s\n", msg)
 }

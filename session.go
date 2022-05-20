@@ -9,9 +9,9 @@ package nebula_go
 import (
 	"fmt"
 
+	"github.com/akhilravuri2/nebula-go/v2/nebula"
+	graph "github.com/akhilravuri2/nebula-go/v2/nebula/graph"
 	"github.com/facebook/fbthrift/thrift/lib/go/thrift"
-	"github.com/vesoft-inc/nebula-go/v2/nebula"
-	graph "github.com/vesoft-inc/nebula-go/v2/nebula/graph"
 )
 
 type timezoneInfo struct {
@@ -102,6 +102,10 @@ func (session *Session) Release() {
 	// Release connection to pool
 	session.connPool.release(session.connection)
 	session.connection = nil
+}
+
+func (session *Session) GetSessionID() int64 {
+	return session.sessionID
 }
 
 func IsError(resp *graph.ExecutionResponse) bool {

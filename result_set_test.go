@@ -11,9 +11,9 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/akhilravuri2/nebula-go/v2/nebula"
+	"github.com/akhilravuri2/nebula-go/v2/nebula/graph"
 	"github.com/stretchr/testify/assert"
-	"github.com/vesoft-inc/nebula-go/v2/nebula"
-	"github.com/vesoft-inc/nebula-go/v2/nebula/graph"
 )
 
 var testTimezone timezoneInfo = timezoneInfo{0, []byte("UTC")}

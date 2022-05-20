@@ -8,11 +8,12 @@ package nebula_go
 
 import (
 	"container/list"
+	"crypto/tls"
 	"fmt"
 	"sync"
 	"time"
 
-	"github.com/vesoft-inc/nebula-go/v2/nebula"
+	"github.com/akhilravuri2/nebula-go/v2/nebula"
 )
 
 type ConnectionPool struct {
@@ -25,6 +26,7 @@ type ConnectionPool struct {
 	rwLock                sync.RWMutex
 	cleanerChan           chan struct{} //notify when pool is close
 	closed                bool
+	sslConfig             *tls.Config
 }
 
 // NewConnectionPool constructs a new connection pool using the given addresses and configs
@@ -49,6 +51,38 @@ func NewConnectionPool(addresses []HostAddress, conf PoolConfig, log Logger) (*C
 		addresses: convAddress,
 		hostIndex: 0,
 	}
+	if err = newPool.initPool(); err != nil {
+		return nil, err
+	}
+	newPool.startCleaner()
+	return newPool, nil
+}
+
+// NewConnectionPool constructs a new SSL connection pool using the given addresses and configs
+func NewSslConnectionPool(addresses []HostAddress, conf PoolConfig, sslConfig *tls.Config, log Logger) (*ConnectionPool, error) {
+	// Process domain to IP
+	convAddress, err := DomainToIP(addresses)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find IP, error: %s ", err.Error())
+	}
+
+	// Check input
+	if len(convAddress) == 0 {
+		return nil, fmt.Errorf("failed to initialize connection pool: illegal address input")
+	}
+
+	// Check config
+	conf.validateConf(log)
+
+	newPool := &ConnectionPool{
+		conf:      conf,
+		log:       log,
+		addresses: convAddress,
+		hostIndex: 0,
+		sslConfig: sslConfig,
+	}
+
+	// Init pool with SSL socket
 	if err = newPool.initPool(); err != nil {
 		return nil, err
 	}
